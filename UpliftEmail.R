@@ -1,31 +1,18 @@
 
----
-title: "Qini"
-output:
-  html_document:
-    toc: true
----
-
-
-```{r}
 #install.packages('uplift')
 library(uplift)
-```
 
 
-```{r}
+
 url = "https://raw.githubusercontent.com/bscan/uplift/master/Kevin_Hillstrom_MineThatData_E-MailAnalytics_DataMiningChallenge_2008.03.20.csv"
 hc = read.csv(file=url)
 hc$treat <- ifelse(as.character(hc$segment) != "No E-Mail", 1, 0)
-```
 
 
-```{r}
+
 prop.test(c(sum(hc$visit[hc$treat==1]), sum(hc$visit[hc$treat==0])), c(sum(hc$treat==1), sum(hc$treat==0)))
-```
 
 
-```{r}
 model <- upliftRF(visit ~ recency + mens + womens + zip_code + newbie + channel + trt(treat),
                  data = hc, 
                  mtry = 3,
@@ -34,17 +21,12 @@ model <- upliftRF(visit ~ recency + mens + womens + zip_code + newbie + channel 
                  minsplit = 100,
                  verbose = FALSE)
 summary(model)
-```
 
 
-```{r}
+
 pred <- predict(model, hc)
 perf <- performance(pred[, 1], pred[, 2], hc$visit, hc$treat, direction = 1)
 Q <- qini(perf, plotit = TRUE)
-```
 
 
-```{r}
-
-```
 
